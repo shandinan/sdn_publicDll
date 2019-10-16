@@ -13,7 +13,7 @@ namespace sdnKDCamera
     {
 
         #region  ipcsdk.dll 函数封装
-        
+
         /// <summary>
         /// 初始化 dll
         /// </summary>
@@ -94,6 +94,30 @@ namespace sdnKDCamera
         /// <returns>成功返回true, 失败返回false，原因解析pErrorCode</returns>
         [DllImport("ipcsdk.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern bool IPC_GetCap(IntPtr pHandle, int nCapLen, ref string apCapName, ref int adwCapOut, ref long pErrorCode);
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="pHandle"></param>
+        /// <param name="pErrorCode"></param>
+        /// <returns></returns>
+        [DllImport("ipcsdk.dll", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int IPC_DelConnectDetect(IntPtr pHandle, ref long pErrorCode);
+        /*=================================================================
+         函数名称: cbfConnectDetect
+         功    能: 连接探测回调回调    ，IPC_AddConnectDetect
+         参数说明: 
+		  dwIP		-- 设备IP 
+		  wPort		-- 设备http端口 
+		  dwCBconnectType	-- 连接状态 emConnectState
+		  dwData	-- 回传数据
+		  dwDataLen -- 回传数据长度
+		  pContext	-- 上下文
+          返 回 值: 成功返回IPC_ERR_SUCCESS, 失败返回错误码
+         =================================================================*/
+        public delegate void cbfConnectDetect(long dwIP, int wPort, long dwHandle, long dwCBconnectType, long dwDataLen, long dwData, IntPtr pContext);
+
+        [DllImport("ipcsdk.dll", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int IPC_AddConnectDetect(IntPtr pHandle, int dwConnectTimeOut, int dwReConnectTimes, cbfConnectDetect pcbfFun, IntPtr pContext, ref long pErrorCode);
 
         #endregion
 
@@ -165,6 +189,17 @@ namespace sdnKDCamera
         /// <returns></returns>
         [DllImport("uniplay.dll")]
         public static extern bool PLAYKD_StopLocalRecord(int nPort);
+        /// <summary>
+        /// 配置LOG输出 
+        /// </summary>
+        /// <param name="iTarget">LOG输出目标。可以为TARGET_NULL、TARGET_PRINT、TARGET_TELNET、TARGET_FILE或者TARGET_LOGCAT，采用或的方式控制</param>
+        /// <param name="iLevel">LOG输出级别。可以为UNILOG_ERR，UNILOG_WARNING,UNILOG_INFO或者UNILOG_DEBUG，采用或的方式控制。需要最详细信息时，需要以如下方式作为参数输入UNILOG_ERR|UNILOG_WARNING|UNILOG_INFO|UNILOG_DEBUG</param>
+        /// <param name="pLogPath">LOG输出路径。只有在LOG输出目标有TARGET_FILE时，才检测该参数</param>
+        /// <param name="iFileNum">输出LOG文件数。只有在LOG输出目标有TARGET_FILE时，才检测该参数。目前该参数无效。可填任意值</param>
+        /// <param name="iModule">输出哪些模块的LOG。目前该参数无效，可填任意值</param>
+        /// <returns></returns>
+        [DllImport("uniplay.dll")]
+        public static extern bool PLAYKD_SetLogConfig(int iTarget, int iLevel, string pLogPath, int iFileNum, int iModule);
 
         #endregion
 
