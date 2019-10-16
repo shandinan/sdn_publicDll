@@ -11,6 +11,9 @@ namespace sdnKDCamera
     /// </summary>
     public class IPCSdk
     {
+
+        #region  ipcsdk.dll 函数封装
+        
         /// <summary>
         /// 初始化 dll
         /// </summary>
@@ -91,5 +94,79 @@ namespace sdnKDCamera
         /// <returns>成功返回true, 失败返回false，原因解析pErrorCode</returns>
         [DllImport("ipcsdk.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern bool IPC_GetCap(IntPtr pHandle, int nCapLen, ref string apCapName, ref int adwCapOut, ref long pErrorCode);
+
+        #endregion
+
+        #region uniplay.dll 函数封装
+        /// <summary>
+        /// 初始化整个SDK环境 
+        /// </summary>
+        /// <returns></returns>
+        [DllImport("uniplay.dll")]
+        public static extern bool PLAYKD_Startup();
+        /// <summary>
+        /// 初始化整个SDK环境 
+        /// </summary>
+        /// <returns></returns>
+        [DllImport("uniplay.dll")]
+        public static extern bool PLAYKD_Cleanup();
+        /// <summary>
+        /// 获取通道号
+        /// </summary>
+        /// <param name="szCompany">厂商名</param>
+        /// <param name="bHw">是否启动硬件加速</param>
+        /// <param name="ppPort">通道号</param>
+        /// <returns>成功返回TRUE；失败返回FALSE</returns>
+        [DllImport("uniplay.dll")]
+        public static extern bool PLAYKD_GetPort(string szCompany, bool bHw, ref int ppPort);
+        /// <summary>
+        /// 释放通道号
+        /// </summary>
+        /// <param name="nPort">通道号</param>
+        [DllImport("uniplay.dll")]
+        public static extern void PLAYKD_FreePort(int nPort);
+        /// <summary>
+        /// 打开流,开始准备媒体流播放，支持媒体流
+        /// </summary>
+        /// <param name="nPort">通道号</param>
+        /// <param name="pHead">文件头缓冲地址</param>
+        /// <param name="nHeadLen">文件头长度</param>
+        /// <param name="nbufferlen"> 视频未解码缓冲区大小，以字节为单位，取值范围50K-100M，即[512*1024/10,512*1024*200]</param>
+        /// <returns>成功返回TRUE；失败返回FALSE</returns>
+        [DllImport("uniplay.dll")]
+        public static extern bool PLAYKD_OpenStream(int nPort, string pHead, int nHeadLen, int nbufferlen);
+        /// <summary>
+        /// 播放声音,默认关闭
+        /// </summary>
+        /// <param name="nPort">通道号</param>
+        /// <returns>成功返回TRUE；失败返回FALSE</returns>
+        [DllImport("uniplay.dll")]
+        public static extern bool PLAYKD_PlaySound(int nPort);
+        /// <summary>
+        /// 关闭指定通道号的声音
+        /// </summary>
+        /// <param name="nPort">通道号</param>
+        /// <returns></returns>
+        [DllImport("uniplay.dll")]
+        public static extern bool PLAYKD_StopSound(int nPort);
+        /// <summary>
+        /// 开启本地录像，支持文件，媒体流  该接口必须在PLAYKD_PLAY之后调用
+        /// </summary>
+        /// <param name="nPort">通道号</param>
+        /// <param name="szRecFileName">录像的本地文件名</param>
+        /// <param name="nRecodeType"> 录像媒体类型，默认为0，自动根据文件后缀名来探测</param>
+        /// <returns>成功返回TRUE；失败返回FALSE</returns>
+        [DllImport("uniplay.dll")]
+        public static extern bool PLAYKD_StartLocalRecord(int nPort, string szRecFileName, int nRecodeType);
+        /// <summary>
+        /// 停止本地录像，支持文件，媒体流
+        /// </summary>
+        /// <param name="nPort">通道号</param>
+        /// <returns></returns>
+        [DllImport("uniplay.dll")]
+        public static extern bool PLAYKD_StopLocalRecord(int nPort);
+
+        #endregion
+
     }
 }
