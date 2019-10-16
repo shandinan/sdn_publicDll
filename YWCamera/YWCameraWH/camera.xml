@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="gb2312"?>
+<LINES>
+	<LINE no="3">
+		<STAGE name = "leftfront1" lineno="1" cartype="01" ip="192.168.10.112" cametype="2" svr="video server" user="jf" pwd="jf1322" sleep="0"/>
+		<STAGE name = "leftfront2" lineno="2" cartype="02" ip="192.168.10.122" cametype="2" svr="video server" user="jf" pwd="jf1322" sleep="0"/>
+		<STAGE name = "leftfront3" lineno="2" cartype="02" ip="192.168.10.132" cametype="2" svr="video server" user="jf" pwd="jf1322" sleep="0"/>
+		<STAGE name = "leftfront4" lineno="2" cartype="02" ip="192.168.10.142" cametype="2" svr="video server" user="jf" pwd="jf1322" sleep="0"/>
+		<STAGE name = "leftfront5" lineno="2" cartype="02" ip="192.168.10.182" cametype="2" svr="video server" user="jf" pwd="jf1322" sleep="0"/>
+		<STAGE name = "rightback1" lineno="1" cartype="01" ip="192.168.10.111" cametype="2" svr="video server" user="jf" pwd="jf1322" sleep="0"/>
+		<STAGE name = "rightback2" lineno="2" cartype="02" ip="192.168.10.121" cametype="2" svr="video server" user="jf" pwd="jf1322" sleep="0"/>
+		<STAGE name = "rightback3" lineno="2" cartype="02" ip="192.168.10.131" cametype="2" svr="video server" user="jf" pwd="jf1322" sleep="0"/>
+		<STAGE name = "rightback4" lineno="2" cartype="02" ip="192.168.10.141" cametype="2" svr="video server" user="jf" pwd="jf1322" sleep="0"/>
+		<STAGE name = "rightback5" lineno="2" cartype="02" ip="192.168.10.181" cametype="2" svr="video server" user="jf" pwd="jf1322" sleep="0"/>
+		<STAGE name = "bottom1" lineno="1" cartype="01" ip="192.168.10.113" cametype="2" svr="video server" user="jf" pwd="jf1322" sleep="0"/>
+		<STAGE name = "bottom2" lineno="2" cartype="02" ip="192.168.10.123" cametype="2" svr="video server" user="jf" pwd="jf1322" sleep="0"/>
+		<STAGE name = "bottom3" lineno="1" cartype="01" ip="192.168.10.133" cametype="2" svr="video server" user="jf" pwd="jf1322" sleep="0"/>
+		<STAGE name = "bottom4" lineno="1" cartype="01" ip="192.168.10.143" cametype="2" svr="video server" user="jf" pwd="jf1322" sleep="0"/>
+		<STAGE name = "brake1" lineno="2" cartype="02" ip="192.168.10.115" cametype="2" svr="video server" user="jf" pwd="jf1322" sleep="10"/>
+		<STAGE name = "brake2" lineno="2" cartype="02" ip="192.168.10.125" cametype="2" svr="video server" user="jf" pwd="jf1322" sleep="10"/>
+		<STAGE name = "brake3" lineno="2" cartype="02" ip="192.168.10.135" cametype="2" svr="video server" user="jf" pwd="jf1322" sleep="10"/>
+		<STAGE name = "brake4" lineno="1" cartype="01" ip="192.168.10.145" cametype="2" svr="video server" user="jf" pwd="jf1322" sleep="0"/>
+		<STAGE name = "brake5" lineno="1" cartype="01" ip="192.168.10.157" cametype="2" svr="video server" user="jf" pwd="jf1322" sleep="0"/>
+		<STAGE name = "speed1" lineno="1" cartype="01" ip="192.168.10.117" cametype="2"  svr="video server" user="jf" pwd="jf1322" sleep="0"/>
+		<STAGE name = "speed2" lineno="1" cartype="01" ip="192.168.10.127" cametype="2"  svr="video server" user="jf" pwd="jf1322" sleep="0"/>
+		<STAGE name = "speed3" lineno="1" cartype="01" ip="192.168.10.137" cametype="2"  svr="video server" user="jf" pwd="jf1322" sleep="0"/>
+		<STAGE name = "speed4" lineno="1" cartype="01" ip="192.168.10.147" cametype="2"  svr="video server" user="jf" pwd="jf1322" sleep="0"/>
+		<STAGE name = "speed5" lineno="1" cartype="01" ip="192.168.10.116" cametype="2"  svr="video server" user="jf" pwd="jf1322" sleep="0"/>
+		<STAGE name = "speed6" lineno="1" cartype="01" ip="192.168.10.126" cametype="2"  svr="video server" user="jf" pwd="jf1322" sleep="0"/>
+		<STAGE name = "lightlfar1" lineno="1" cartype="01" ip="192.168.10.118" cametype="2" svr="video server" user="jf" pwd="jf1322" sleep="10"/>
+		<STAGE name = "lightlfar2" lineno="1" cartype="01" ip="192.168.10.128" cametype="2" svr="video server" user="jf" pwd="jf1322" sleep="10"/>
+		<STAGE name = "lightlfar3" lineno="1" cartype="01" ip="192.168.10.138" cametype="2" svr="video server" user="jf" pwd="jf1322" sleep="10"/>
+		<STAGE name = "lightlfar4" lineno="1" cartype="01" ip="192.168.10.148" cametype="2" svr="video server" user="jf" pwd="jf1322" sleep="10"/>
+		<STAGE name="roadback" lineno="1" cartype="-1" ip="192.168.10.171" cametype="2" svr="video server" user="jf" pwd="jf1322" sleep="0"/>
+		<STAGE name="roadfront" lineno="1" cartype="-1" ip="192.168.10.172" cametype="2" svr="video server" user="jf" pwd="jf1322" sleep="0"/>
+		<STAGE name="roadfront1" lineno="1" cartype="-1" ip="192.168.10.173" cametype="2" svr="video server" user="jf" pwd="jf1322" sleep="0"/>
+		<STAGE name="roadback1" lineno="1" cartype="-1" ip="192.168.10.174" cametype="2" svr="video server" user="jf" pwd="jf1322" sleep="0"/>
+	</LINE>
+</LINES>
