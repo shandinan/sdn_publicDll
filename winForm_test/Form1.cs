@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using sdnKDCamera;
+using System.Net;
 
 namespace winForm_test
 {
@@ -27,15 +28,46 @@ namespace winForm_test
             {
                 long iErro = 0;
                 bool bl = IPCSdk.IPC_InitDll("ipcsdk.dll", 3300, 0, ref iErro);
-               
+                string strIp = "192.168.50.20";
+                int iPort = 80;
+                string strName = "admin";
+                string strPasswd = "admin123";
+                char[] separator = new char[] { '.' };
+                string[] items = strIp.Split(separator);
+                long dreamduip = long.Parse(items[0]) << 24
+                        | long.Parse(items[1]) << 16
+                        | long.Parse(items[2]) << 8
+                        | long.Parse(items[3]);
+                long lIp = System.Net.IPAddress.HostToNetworkOrder(dreamduip);
+
+                IntPtr inHandle = IPCSdk.IPC_CreateHandle(lIp, iPort, strName, strPasswd);
+
                 //string strVersion="";
-             //   bl = IPCSdk.IPC_GetVersion(out strVersion, 1000, ref iErro);
-               // MessageBox.Show(strVersion);
+                //   bl = IPCSdk.IPC_GetVersion(out strVersion, 1000, ref iErro);
+                // MessageBox.Show(strVersion);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 throw ex;
             }
+        }
+        /// <summary>
+        /// 开始录像
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btnStartRec_Click(object sender, EventArgs e)
+        {
+
+        }
+        /// <summary>
+        /// 结束录像
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btnStopRec_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }
