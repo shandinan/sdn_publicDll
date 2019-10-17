@@ -12,6 +12,12 @@ namespace sdnKDCamera
     public class IPCSdk
     {
 
+        #region 结构体
+
+
+
+        #endregion
+
         #region  ipcsdk.dll 函数封装
 
         /// <summary>
@@ -220,6 +226,9 @@ namespace sdnKDCamera
         /// <returns></returns>
         [DllImport("uniplay.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern bool PLAYKD_Play(int nPort, IntPtr hwnd);
+
+        //[DllImport("uniplay.dll",CallingConvention=CallingConvention.Cdecl)]
+        //public static extern bool PLAYKD_InputVideoData(int nPort,)
 
         #endregion
 
