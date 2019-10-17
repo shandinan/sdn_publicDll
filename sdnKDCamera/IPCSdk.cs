@@ -11,6 +11,18 @@ namespace sdnKDCamera
     /// </summary>
     public class IPCSdk
     {
+        #region 公共变量
+
+        /* 端口定义 */
+        public const uint MEDIA_RTP_REMOTE_PORT = 59000;     // 前端发送视频浏览端口
+        public const uint MEDIA_RTP_LOCAL_PORT = 60000;   // 视频浏览端口
+        public const uint MEDIA_LOCAL_CALL_PORT = 52000;   // 音频呼叫端口
+        public const uint MEDIA_LOCAL_REC_PORT = 10086;   // 本地录像起始端口
+        public const uint MEDIA_DOWNLOAD_PORT = 10000;    // 下载本地接收端口
+        public const uint MEDIA_DOWNLOAD_PUPORT = 1730;    // 前端下载发送端口
+        public const uint MEDIA_SWITCH_SEND_PORT = 40000;   // 转发端口
+
+        #endregion
 
         #region 枚举
 

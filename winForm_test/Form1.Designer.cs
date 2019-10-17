@@ -31,6 +31,10 @@
             this.btnInit = new System.Windows.Forms.Button();
             this.btnStartRec = new System.Windows.Forms.Button();
             this.btnStopRec = new System.Windows.Forms.Button();
+            this.panel1 = new System.Windows.Forms.Panel();
+            this.picShow = new System.Windows.Forms.PictureBox();
+            this.panel1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.picShow)).BeginInit();
             this.SuspendLayout();
             // 
             // btnInit
@@ -45,7 +49,7 @@
             // 
             // btnStartRec
             // 
-            this.btnStartRec.Location = new System.Drawing.Point(118, 67);
+            this.btnStartRec.Location = new System.Drawing.Point(12, 96);
             this.btnStartRec.Name = "btnStartRec";
             this.btnStartRec.Size = new System.Drawing.Size(75, 23);
             this.btnStartRec.TabIndex = 1;
@@ -55,7 +59,7 @@
             // 
             // btnStopRec
             // 
-            this.btnStopRec.Location = new System.Drawing.Point(118, 118);
+            this.btnStopRec.Location = new System.Drawing.Point(12, 134);
             this.btnStopRec.Name = "btnStopRec";
             this.btnStopRec.Size = new System.Drawing.Size(75, 23);
             this.btnStopRec.TabIndex = 2;
@@ -63,16 +67,38 @@
             this.btnStopRec.UseVisualStyleBackColor = true;
             this.btnStopRec.Click += new System.EventHandler(this.btnStopRec_Click);
             // 
+            // panel1
+            // 
+            this.panel1.Controls.Add(this.picShow);
+            this.panel1.Dock = System.Windows.Forms.DockStyle.Right;
+            this.panel1.Location = new System.Drawing.Point(131, 0);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(153, 261);
+            this.panel1.TabIndex = 3;
+            // 
+            // picShow
+            // 
+            this.picShow.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.picShow.Location = new System.Drawing.Point(0, 0);
+            this.picShow.Name = "picShow";
+            this.picShow.Size = new System.Drawing.Size(153, 261);
+            this.picShow.TabIndex = 0;
+            this.picShow.TabStop = false;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(284, 261);
+            this.Controls.Add(this.panel1);
             this.Controls.Add(this.btnStopRec);
             this.Controls.Add(this.btnStartRec);
             this.Controls.Add(this.btnInit);
             this.Name = "Form1";
             this.Text = "Form1";
+            this.Load += new System.EventHandler(this.Form1_Load);
+            this.panel1.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.picShow)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -82,6 +108,8 @@
         private System.Windows.Forms.Button btnInit;
         private System.Windows.Forms.Button btnStartRec;
         private System.Windows.Forms.Button btnStopRec;
+        private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.PictureBox picShow;
     }
 }
 
