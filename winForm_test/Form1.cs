@@ -17,8 +17,9 @@ namespace winForm_test
     {
 
         int iPort_play = 0; //播放句柄
-        long pdwMediaId = 0;//MediaId
+        uint pdwMediaId = 0;//MediaId
                             // private IPCSdk ipcsdk = null;//IPCSdk
+        MEDIA_FRAMECBFUN frameCb = null;
         public Form1()
         {
             InitializeComponent();
@@ -30,7 +31,7 @@ namespace winForm_test
         /// <param name="dwMediaID"></param>
         /// <param name="pFrame"></param>
         /// <param name="pUserData"></param>
-        public void FrameCb(int dwMediaID,ref TMediaRawData pFrame, IntPtr pUserData)
+        public void FrameCb(int dwMediaID, TMediaRawData pFrame,  object pUserData)
         {
             try
             {
@@ -53,6 +54,8 @@ namespace winForm_test
             {
                 long iErro = 0;
                 bool bl = IPCSdk.IPC_InitDll("ipcsdk.dll", 3300, 0, ref iErro);
+                bool bl2 = IPCSdk.IPC_InitDll("mediarevsdk.dll", 3500, 0, ref iErro);
+                bool bl3 = IPCSdk.IPC_InitDll("ipcrpctrl.dll", 3500, 0, ref iErro);
                 string strIp = "192.168.50.20";
                 uint iPort = 80;
                 string strName = "admin";
@@ -66,18 +69,20 @@ namespace winForm_test
                 // long lIp = System.Net.IPAddress.HostToNetworkOrder(dreamduip);
                 uint lIp = Convert.ToUInt32(dreamduip);
 
+                IPCSdk.MEDIA_Init(3500, 0); //初始化 mediarevsdk.dll
+                IPCSdk.PMGR_InitPortMgr(); //初始化 mediaportmgr.dll
+
                 //创建句柄
-                long inHandle = IPCSdk.IPC_CreateHandle(lIp, iPort, strName, strPasswd);
+                uint inHandle = IPCSdk.IPC_CreateHandle(lIp, iPort, strName, strPasswd);
                 //登录摄像头
                 bool bl_login = IPCSdk.IPC_Login(ref inHandle, strName, strPasswd, ref iErro);
-
-                IPCSdk.PMGR_InitPortMgr(); //初始化 mediaportmgr.dll
-                IPCSdk.MEDIA_Init(3500, 0); //初始化 mediarevsdk.dll
 
                 int iGetMediaId = IPCSdk.MEDIA_GetMediaId(ref pdwMediaId);
 
                 //初始化 uniplay.dll 
                 bool lb_init_uniplay = IPCSdk.PLAYKD_Startup();
+
+                IPCSdk.PLAYKD_SetLogConfig(8 | 16, 1 | 2 | 4 | 8, "D:\\", 0, 0);
 
                 //获取播放端口
                 bool bl_getPort = IPCSdk.PLAYKD_GetPort(null, false, ref iPort_play);
@@ -96,7 +101,7 @@ namespace winForm_test
                 bool bDoubleAudio = false;
 
                 int i = IPCSdk.PMGR_GetLocalIp(ref dwLocalIp, lIp, 80);
-                int ii = IPCSdk.PMGR_GetMediaPort(ref wVideoPort, ref wAudioPort, '0', 60000);
+                int ii = IPCSdk.PMGR_GetMediaPort(ref wVideoPort, ref wAudioPort, '0', MEDIA_RTP_LOCAL_PORT);
 
                 tagPlayVideoInfo tPlayVideoInfo = new tagPlayVideoInfo();
 
@@ -132,18 +137,20 @@ namespace winForm_test
                 tRtspSwitch.szAdmin = Encoding.Default.GetBytes(strName.PadRight(50, '\0'));
                 tRtspSwitch.szPassword = Encoding.Default.GetBytes(strPasswd.PadRight(50, '\0'));
                 tRtspSwitch.szMediaURL = tRtspInfo.szurl;
+                string strUrl = Encoding.Default.GetString(tRtspInfo.szurl);
 
                 // 按需
                 tRtspSwitch.tSwitchParam.tEncNameAndPayload.eEncName = tagEncName.E_ENCNAME_H264;
-                tRtspSwitch.tSwitchParam.tEncNameAndPayload.byPayload = 'j';
+                tRtspSwitch.tSwitchParam.tEncNameAndPayload.byPayload = 106;//j
                 tRtspSwitch.bAlarm = true;      // 是否开启接收前端智能告警回调
                 tRtspSwitch.bNoStream = false;//FALSE申请rtsp码流， TRUE不申请rtsp码流，只申请rtsp告警链路
 
                 int nMediaRet = IPCSdk.MEDIA_SetRtspSwitch(pdwMediaId, lIp, dwLocalIp, tRtspSwitch);
 
-                MEDIA_FRAMECBFUN frameCb = new MEDIA_FRAMECBFUN(FrameCb);
+              frameCb = new MEDIA_FRAMECBFUN(FrameCb);
+                long test = 0;
 
-                nMediaRet = IPCSdk.MEDIA_SetFrameCallBack(pdwMediaId, frameCb, IntPtr.Zero);
+                nMediaRet = IPCSdk.MEDIA_SetFrameCallBack(pdwMediaId, frameCb, this);
 
                 // TRTSPPARAM tRtspParam;
 
