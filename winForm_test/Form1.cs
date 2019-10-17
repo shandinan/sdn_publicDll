@@ -13,6 +13,8 @@ namespace winForm_test
 {
     public partial class Form1 : Form
     {
+
+        int iPort_play = 0; //播放句柄
         public Form1()
         {
             InitializeComponent();
@@ -45,6 +47,15 @@ namespace winForm_test
                 //登录摄像头
                 bool bl_login = IPCSdk.IPC_Login(inHandle, strName, strPasswd, ref iErro);
 
+                //初始化 uniplay.dll 
+                bool lb_init_uniplay = IPCSdk.PLAYKD_Startup();
+               
+                //获取播放端口
+                bool bl_getPort = IPCSdk.PLAYKD_GetPort(null, false, ref iPort_play);
+                //打开视频流
+                bool bl_OpenStream = IPCSdk.PLAYKD_OpenStream(iPort_play, null, 0, 3);
+
+
                 //string strVersion="";
                 //   bl = IPCSdk.IPC_GetVersion(out strVersion, 1000, ref iErro);
                 // MessageBox.Show(strVersion);
@@ -61,7 +72,15 @@ namespace winForm_test
         /// <param name="e"></param>
         private void btnStartRec_Click(object sender, EventArgs e)
         {
-
+            try
+            {
+                string strPath = @"D:\test.mp4";
+                bool bl_start_rec = IPCSdk.PLAYKD_StartLocalRecord(iPort_play, strPath, 1);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
         /// <summary>
         /// 结束录像
