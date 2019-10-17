@@ -14,7 +14,10 @@ namespace sdnKDCamera
 
         #region 结构体
 
+        public struct tagRawData
+        {
 
+        }
 
         #endregion
 
