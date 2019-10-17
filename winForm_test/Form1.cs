@@ -31,7 +31,7 @@ namespace winForm_test
                 long iErro = 0;
                 bool bl = IPCSdk.IPC_InitDll("ipcsdk.dll", 3300, 0, ref iErro);
                 string strIp = "192.168.50.20";
-                int iPort = 80;
+                uint iPort = 80;
                 string strName = "admin";
                 string strPasswd = "admin123";
                 char[] separator = new char[] { '.' };
@@ -40,12 +40,13 @@ namespace winForm_test
                         | long.Parse(items[1]) << 16
                         | long.Parse(items[2]) << 8
                         | long.Parse(items[3]);
-                long lIp = System.Net.IPAddress.HostToNetworkOrder(dreamduip);
+                // long lIp = System.Net.IPAddress.HostToNetworkOrder(dreamduip);
+                uint lIp = Convert.ToUInt32(dreamduip);
 
                 //创建句柄
-                IntPtr inHandle = IPCSdk.IPC_CreateHandle(lIp, iPort, strName, strPasswd);
+                long inHandle = IPCSdk.IPC_CreateHandle(lIp, iPort, strName, strPasswd);
                 //登录摄像头
-                bool bl_login = IPCSdk.IPC_Login(inHandle, strName, strPasswd, ref iErro);
+                bool bl_login = IPCSdk.IPC_Login(ref inHandle, strName, strPasswd, ref iErro);
 
                 //初始化 uniplay.dll 
                 bool lb_init_uniplay = IPCSdk.PLAYKD_Startup();
@@ -75,7 +76,8 @@ namespace winForm_test
             try
             {
                 string strPath = @"D:\test.mp4";
-                bool bl_start_rec = IPCSdk.PLAYKD_StartLocalRecord(iPort_play, strPath, 1);
+                //  bool bl_start_rec = IPCSdk.PLAYKD_StartLocalRecord(iPort_play, strPath, 1);
+                bool bl_start_rec = IPCSdk.PLAYKD_StartLocalRecordExt(iPort_play, strPath, 1, 0, 102400, true);
             }
             catch (Exception ex)
             {
@@ -89,7 +91,7 @@ namespace winForm_test
         /// <param name="e"></param>
         private void btnStopRec_Click(object sender, EventArgs e)
         {
-
+            bool bl_stop_rec = IPCSdk.PLAYKD_StopLocalRecord(iPort_play);
         }
     }
 }

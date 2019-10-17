@@ -57,8 +57,8 @@ namespace sdnKDCamera
         /// <param name="pName">用户名</param>
         /// <param name="pPassword">用户密码</param>
         /// <returns>成功返回设备句柄, 失败返回错误码</returns>
-        [DllImport("ipcsdk.dll")]
-        public static extern IntPtr IPC_CreateHandle(long dwIP, int wPort, string pName, string pPassword);
+        [DllImport("ipcsdk.dll",CallingConvention=CallingConvention.Cdecl)]
+        public static extern long IPC_CreateHandle(uint dwIP, uint wPort, string pName, string pPassword);
         /// <summary>
         /// 销毁句柄
         /// </summary>
@@ -74,7 +74,7 @@ namespace sdnKDCamera
         /// <param name="pErrorCode">错误码</param>
         /// <returns>成功返回true, 失败返回false，原因解析pErrorCode</returns>
         [DllImport("ipcsdk.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern bool IPC_Login(IntPtr pHandle, string pName, string pPassword, ref long pErrorCode);
+        public static extern bool IPC_Login(ref long pHandle, string pName, string pPassword, ref long pErrorCode);
         /// <summary>
         /// 用户注销注册
         /// </summary>
@@ -82,7 +82,7 @@ namespace sdnKDCamera
         /// <param name="pErrorCode"></param>
         /// <returns></returns>
         [DllImport("ipcsdk.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern bool IPC_Logout(IntPtr pHandle, ref long pErrorCode);
+        public static extern bool IPC_Logout(ref long pHandle, ref long pErrorCode);
         /// <summary>
         /// 获取设备指定的能力集
         /// </summary>
@@ -93,7 +93,7 @@ namespace sdnKDCamera
         /// <param name="pErrorCode">错误码</param>
         /// <returns>成功返回true, 失败返回false，原因解析pErrorCode</returns>
         [DllImport("ipcsdk.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern bool IPC_GetCap(IntPtr pHandle, int nCapLen, ref string apCapName, ref int adwCapOut, ref long pErrorCode);
+        public static extern bool IPC_GetCap(ref long pHandle, int nCapLen, ref string apCapName, ref int adwCapOut, ref long pErrorCode);
         /// <summary>
         /// 
         /// </summary>
@@ -101,7 +101,7 @@ namespace sdnKDCamera
         /// <param name="pErrorCode"></param>
         /// <returns></returns>
         [DllImport("ipcsdk.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern int IPC_DelConnectDetect(IntPtr pHandle, ref long pErrorCode);
+        public static extern int IPC_DelConnectDetect(ref long pHandle, ref long pErrorCode);
         /*=================================================================
          函数名称: cbfConnectDetect
          功    能: 连接探测回调回调    ，IPC_AddConnectDetect
@@ -117,7 +117,7 @@ namespace sdnKDCamera
         public delegate void cbfConnectDetect(long dwIP, int wPort, long dwHandle, long dwCBconnectType, long dwDataLen, long dwData, IntPtr pContext);
 
         [DllImport("ipcsdk.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern int IPC_AddConnectDetect(IntPtr pHandle, int dwConnectTimeOut, int dwReConnectTimes, cbfConnectDetect pcbfFun, IntPtr pContext, ref long pErrorCode);
+        public static extern int IPC_AddConnectDetect(ref long pHandle, int dwConnectTimeOut, int dwReConnectTimes, cbfConnectDetect pcbfFun, IntPtr pContext, ref long pErrorCode);
 
         #endregion
 
@@ -126,13 +126,13 @@ namespace sdnKDCamera
         /// 初始化整个SDK环境 
         /// </summary>
         /// <returns></returns>
-        [DllImport("uniplay.dll")]
+        [DllImport("uniplay.dll",CallingConvention=CallingConvention.Cdecl)]
         public static extern bool PLAYKD_Startup();
         /// <summary>
         /// 初始化整个SDK环境 
         /// </summary>
         /// <returns></returns>
-        [DllImport("uniplay.dll")]
+        [DllImport("uniplay.dll",CallingConvention=CallingConvention.Cdecl)]
         public static extern bool PLAYKD_Cleanup();
         /// <summary>
         /// 获取通道号
@@ -141,13 +141,13 @@ namespace sdnKDCamera
         /// <param name="bHw">是否启动硬件加速</param>
         /// <param name="ppPort">通道号</param>
         /// <returns>成功返回TRUE；失败返回FALSE</returns>
-        [DllImport("uniplay.dll")]
+        [DllImport("uniplay.dll",CallingConvention=CallingConvention.Cdecl)]
         public static extern bool PLAYKD_GetPort(string szCompany, bool bHw, ref int ppPort);
         /// <summary>
         /// 释放通道号
         /// </summary>
         /// <param name="nPort">通道号</param>
-        [DllImport("uniplay.dll")]
+        [DllImport("uniplay.dll",CallingConvention=CallingConvention.Cdecl)]
         public static extern void PLAYKD_FreePort(int nPort);
         /// <summary>
         /// 打开流,开始准备媒体流播放，支持媒体流
@@ -157,21 +157,21 @@ namespace sdnKDCamera
         /// <param name="nHeadLen">文件头长度</param>
         /// <param name="nbufferlen"> 视频未解码缓冲区大小，以字节为单位，取值范围50K-100M，即[512*1024/10,512*1024*200]</param>
         /// <returns>成功返回TRUE；失败返回FALSE</returns>
-        [DllImport("uniplay.dll")]
+        [DllImport("uniplay.dll",CallingConvention=CallingConvention.Cdecl)]
         public static extern bool PLAYKD_OpenStream(int nPort, string pHead, int nHeadLen, int nbufferlen);
         /// <summary>
         /// 播放声音,默认关闭
         /// </summary>
         /// <param name="nPort">通道号</param>
         /// <returns>成功返回TRUE；失败返回FALSE</returns>
-        [DllImport("uniplay.dll")]
+        [DllImport("uniplay.dll",CallingConvention=CallingConvention.Cdecl)]
         public static extern bool PLAYKD_PlaySound(int nPort);
         /// <summary>
         /// 关闭指定通道号的声音
         /// </summary>
         /// <param name="nPort">通道号</param>
         /// <returns></returns>
-        [DllImport("uniplay.dll")]
+        [DllImport("uniplay.dll",CallingConvention=CallingConvention.Cdecl)]
         public static extern bool PLAYKD_StopSound(int nPort);
         /// <summary>
         /// 开启本地录像，支持文件，媒体流  该接口必须在PLAYKD_PLAY之后调用
@@ -180,14 +180,26 @@ namespace sdnKDCamera
         /// <param name="szRecFileName">录像的本地文件名</param>
         /// <param name="nRecodeType"> 录像媒体类型，默认为0，自动根据文件后缀名来探测</param>
         /// <returns>成功返回TRUE；失败返回FALSE</returns>
-        [DllImport("uniplay.dll")]
+        [DllImport("uniplay.dll",CallingConvention=CallingConvention.Cdecl)]
         public static extern bool PLAYKD_StartLocalRecord(int nPort, string szRecFileName, int nRecodeType);
+        /// <summary>
+        /// 开启本地录像，支持文件，媒体流
+        /// </summary>
+        /// <param name="nPort">通道号</param>
+        /// <param name="szRecFileName"> 录像的本地文件全路径,文件名以.asf或者.mp4结尾</param>
+        /// <param name="nRecodeType">录像媒体类型，  0：将未解码buffer数据保存为ASF/MP4文件，由传入的文件名后缀决定；1：将当前CacheBuffer数据保存为ASF/MP4文件，由传入的文件名后缀决定；必须先调用PLAYKD_CachedDataTime接口，并且当前cache中有数据</param>
+        /// <param name="iStreamType"> 要录制的码流类型，1 表示音频,2表示视频,0表示所有码流都录制,目前只支持0</param>
+        /// <param name="iFileLen">文件大小超过该值时按命名规则重录一个新的文件，单位为1K字节</param>
+        /// <param name="bFirstVideoFrame">录像文件第一帧是否要求为视频帧，1：第一帧必须是视频帧（若一直没有视频帧，则不会产生录像文件），0：不强制第一帧必须为视频帧，默认不强制。 </param>
+        /// <returns>成功返回TRUE；失败返回FALSE</returns>
+        [DllImport("uniplay.dll", CallingConvention = CallingConvention.Cdecl)]
+        public static extern bool PLAYKD_StartLocalRecordExt(int nPort, string szRecFileName, int nRecodeType, int iStreamType, int iFileLen, bool bFirstVideoFrame);
         /// <summary>
         /// 停止本地录像，支持文件，媒体流
         /// </summary>
         /// <param name="nPort">通道号</param>
         /// <returns></returns>
-        [DllImport("uniplay.dll")]
+        [DllImport("uniplay.dll",CallingConvention=CallingConvention.Cdecl)]
         public static extern bool PLAYKD_StopLocalRecord(int nPort);
         /// <summary>
         /// 配置LOG输出 
@@ -198,8 +210,16 @@ namespace sdnKDCamera
         /// <param name="iFileNum">输出LOG文件数。只有在LOG输出目标有TARGET_FILE时，才检测该参数。目前该参数无效。可填任意值</param>
         /// <param name="iModule">输出哪些模块的LOG。目前该参数无效，可填任意值</param>
         /// <returns></returns>
-        [DllImport("uniplay.dll")]
+        [DllImport("uniplay.dll",CallingConvention=CallingConvention.Cdecl)]
         public static extern bool PLAYKD_SetLogConfig(int iTarget, int iLevel, string pLogPath, int iFileNum, int iModule);
+        /// <summary>
+        /// 开始解码，播放，支持媒体流，文件，再次调用的话，应该重置到初始状态.
+        /// </summary>
+        /// <param name="nPort">通道号</param>
+        /// <param name="hwnd">播放窗口句柄，view(安卓)，UIView(ios)，hwnd(windows),linux(XID) </param>
+        /// <returns></returns>
+        [DllImport("uniplay.dll", CallingConvention = CallingConvention.Cdecl)]
+        public static extern bool PLAYKD_Play(int nPort, IntPtr hwnd);
 
         #endregion
 
