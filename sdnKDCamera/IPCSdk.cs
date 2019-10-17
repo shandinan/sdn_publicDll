@@ -12,11 +12,110 @@ namespace sdnKDCamera
     public class IPCSdk
     {
 
-        #region 结构体
+        #region 枚举
 
-        public struct tagRawData
+        public enum emPlayVideoType
         {
+            type_udp = 0,     // udp
+            type_tcp,          // tcp
+            type_unknow,
+        }
 
+        public enum tagEncName
+        {
+            E_ENCNAME_H264 = 10,
+            E_ENCNAME_H265,
+            E_ENCNAME_MJPEG,
+            E_ENCNAME_SVAC,
+            E_ENCNAME_NULL,
+        }
+
+        #endregion
+
+        #region 结构体
+        /// <summary>
+        /// RTSP浏览信息
+        /// </summary>
+        [StructLayoutAttribute(LayoutKind.Sequential)]
+        public struct TRTSPPARAM
+        {
+            public char byVideoSource;//视频源ID
+            public int wVideoChanID;//码流通道
+        }
+        /// <summary>
+        /// RTSP浏览返回信息
+        /// </summary>
+        [StructLayoutAttribute(LayoutKind.Sequential)]
+        public struct TRTSPINFO
+        {
+            [MarshalAsAttribute(UnmanagedType.ByValArray, SizeConst = 260, ArraySubType = UnmanagedType.I1)]
+            public byte[] szurl;
+            int wRtspPort;
+            bool bDoubleAudio; // 是否支持双音频
+        }
+        /// <summary>
+        /// 本地端口
+        /// </summary>
+        [StructLayoutAttribute(LayoutKind.Sequential)]
+        public struct tagLocalNetParam
+        {
+            uint wRtpPort;
+            uint wRtcpPort;
+            uint wRtcpBackPort;
+        }
+
+        [StructLayoutAttribute(LayoutKind.Sequential)]
+        public struct tagPlayPortInfo
+        {
+            tagLocalNetParam tPlayVideoPort;
+            tagLocalNetParam tPlayAudioPort;
+            tagLocalNetParam tPlayAudioPort2;
+            tagLocalNetParam tPlayAlarmPort;
+        }
+        [StructLayoutAttribute(LayoutKind.Sequential)]
+        public struct tagEncNameAndPayload
+        {
+            tagEncName eEncName;          // 码流编码类型
+            char byPayload;				// payload
+        }
+        /// <summary>
+        /// 远端端口
+        /// </summary>
+        [StructLayoutAttribute(LayoutKind.Sequential)]
+        public struct tagRemotePortInfo
+        {
+            uint wRemoteVideoPort;
+            uint wRemoteAudioPort;
+            uint wRemoteAudioPort2;
+            uint wRemoteAlarmPort;
+        }
+
+        /// <summary>
+        /// 设置接收参数
+        /// </summary>
+        [StructLayoutAttribute(LayoutKind.Sequential)]
+        public struct tagSwitchParam
+        {
+            tagPlayPortInfo tPlayPortInfo;            // 本地的端口(必要) 
+            tagRemotePortInfo tRemotePortInfo;        // 远端发送端口（必要）
+            tagLocalNetParam tEncNameAndPayload;	// 按需
+        }
+
+        /// <summary>
+        /// 设置rtsp 参数
+        /// </summary>
+        [StructLayoutAttribute(LayoutKind.Sequential)]
+        public struct tagRtspSwitchParam
+        {
+            [MarshalAsAttribute(UnmanagedType.ByValArray, SizeConst = 32, ArraySubType = UnmanagedType.I1)]
+            public byte[] szAdmin; // 前端的账号
+            [MarshalAsAttribute(UnmanagedType.ByValArray, SizeConst = 32, ArraySubType = UnmanagedType.I1)]
+            public byte[] szPassword;// 前端的密码
+            [MarshalAsAttribute(UnmanagedType.ByValArray, SizeConst = 260, ArraySubType = UnmanagedType.I1)]
+            public byte[] szMediaURL;// url
+            bool bAlarm;             // 是否开启告警
+            bool bNoStream;          // FALSE申请rtsp码流， TRUE不申请rtsp码流，只申请rtsp告警链路
+            tagSwitchParam tSwitchParam;
         }
 
         #endregion
@@ -66,7 +165,7 @@ namespace sdnKDCamera
         /// <param name="pName">用户名</param>
         /// <param name="pPassword">用户密码</param>
         /// <returns>成功返回设备句柄, 失败返回错误码</returns>
-        [DllImport("ipcsdk.dll",CallingConvention=CallingConvention.Cdecl)]
+        [DllImport("ipcsdk.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern long IPC_CreateHandle(uint dwIP, uint wPort, string pName, string pPassword);
         /// <summary>
         /// 销毁句柄
@@ -127,6 +226,17 @@ namespace sdnKDCamera
 
         [DllImport("ipcsdk.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern int IPC_AddConnectDetect(ref long pHandle, int dwConnectTimeOut, int dwReConnectTimes, cbfConnectDetect pcbfFun, IntPtr pContext, ref long pErrorCode);
+        /*=================================================================
+          函数名称: IPC_GetRtspURL
+          功    能: 获取rtp码流，带告警元数据
+          参数说明: pParam [in]       输入结构体参数
+		  nLen [in]		    输入结构体长度
+		  pInfoOut [out]	输出结构体参数
+		  nLenInfo [out]	输出结构体长度
+          返 回 值: 成功返回IPC_ERR_SUCCESS, 失败返回错误码
+          =================================================================*/
+        [DllImport("ipcsdk.dll", CallingConvention = CallingConvention.Cdecl)]
+        public static extern bool IPC_GetRtspUrl(ref long pHandle, emPlayVideoType eType, ref TRTSPPARAM pParam, int nParamLen, ref TRTSPINFO pInfoOut, int nLenInfo, ref long pErrorCode, int bNoStream);
 
         #endregion
 
@@ -135,13 +245,13 @@ namespace sdnKDCamera
         /// 初始化整个SDK环境 
         /// </summary>
         /// <returns></returns>
-        [DllImport("uniplay.dll",CallingConvention=CallingConvention.Cdecl)]
+        [DllImport("uniplay.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern bool PLAYKD_Startup();
         /// <summary>
         /// 初始化整个SDK环境 
         /// </summary>
         /// <returns></returns>
-        [DllImport("uniplay.dll",CallingConvention=CallingConvention.Cdecl)]
+        [DllImport("uniplay.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern bool PLAYKD_Cleanup();
         /// <summary>
         /// 获取通道号
@@ -150,13 +260,13 @@ namespace sdnKDCamera
         /// <param name="bHw">是否启动硬件加速</param>
         /// <param name="ppPort">通道号</param>
         /// <returns>成功返回TRUE；失败返回FALSE</returns>
-        [DllImport("uniplay.dll",CallingConvention=CallingConvention.Cdecl)]
+        [DllImport("uniplay.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern bool PLAYKD_GetPort(string szCompany, bool bHw, ref int ppPort);
         /// <summary>
         /// 释放通道号
         /// </summary>
         /// <param name="nPort">通道号</param>
-        [DllImport("uniplay.dll",CallingConvention=CallingConvention.Cdecl)]
+        [DllImport("uniplay.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern void PLAYKD_FreePort(int nPort);
         /// <summary>
         /// 打开流,开始准备媒体流播放，支持媒体流
@@ -166,21 +276,21 @@ namespace sdnKDCamera
         /// <param name="nHeadLen">文件头长度</param>
         /// <param name="nbufferlen"> 视频未解码缓冲区大小，以字节为单位，取值范围50K-100M，即[512*1024/10,512*1024*200]</param>
         /// <returns>成功返回TRUE；失败返回FALSE</returns>
-        [DllImport("uniplay.dll",CallingConvention=CallingConvention.Cdecl)]
+        [DllImport("uniplay.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern bool PLAYKD_OpenStream(int nPort, string pHead, int nHeadLen, int nbufferlen);
         /// <summary>
         /// 播放声音,默认关闭
         /// </summary>
         /// <param name="nPort">通道号</param>
         /// <returns>成功返回TRUE；失败返回FALSE</returns>
-        [DllImport("uniplay.dll",CallingConvention=CallingConvention.Cdecl)]
+        [DllImport("uniplay.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern bool PLAYKD_PlaySound(int nPort);
         /// <summary>
         /// 关闭指定通道号的声音
         /// </summary>
         /// <param name="nPort">通道号</param>
         /// <returns></returns>
-        [DllImport("uniplay.dll",CallingConvention=CallingConvention.Cdecl)]
+        [DllImport("uniplay.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern bool PLAYKD_StopSound(int nPort);
         /// <summary>
         /// 开启本地录像，支持文件，媒体流  该接口必须在PLAYKD_PLAY之后调用
@@ -189,7 +299,7 @@ namespace sdnKDCamera
         /// <param name="szRecFileName">录像的本地文件名</param>
         /// <param name="nRecodeType"> 录像媒体类型，默认为0，自动根据文件后缀名来探测</param>
         /// <returns>成功返回TRUE；失败返回FALSE</returns>
-        [DllImport("uniplay.dll",CallingConvention=CallingConvention.Cdecl)]
+        [DllImport("uniplay.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern bool PLAYKD_StartLocalRecord(int nPort, string szRecFileName, int nRecodeType);
         /// <summary>
         /// 开启本地录像，支持文件，媒体流
@@ -208,7 +318,7 @@ namespace sdnKDCamera
         /// </summary>
         /// <param name="nPort">通道号</param>
         /// <returns></returns>
-        [DllImport("uniplay.dll",CallingConvention=CallingConvention.Cdecl)]
+        [DllImport("uniplay.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern bool PLAYKD_StopLocalRecord(int nPort);
         /// <summary>
         /// 配置LOG输出 
@@ -219,7 +329,7 @@ namespace sdnKDCamera
         /// <param name="iFileNum">输出LOG文件数。只有在LOG输出目标有TARGET_FILE时，才检测该参数。目前该参数无效。可填任意值</param>
         /// <param name="iModule">输出哪些模块的LOG。目前该参数无效，可填任意值</param>
         /// <returns></returns>
-        [DllImport("uniplay.dll",CallingConvention=CallingConvention.Cdecl)]
+        [DllImport("uniplay.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern bool PLAYKD_SetLogConfig(int iTarget, int iLevel, string pLogPath, int iFileNum, int iModule);
         /// <summary>
         /// 开始解码，播放，支持媒体流，文件，再次调用的话，应该重置到初始状态.
@@ -232,6 +342,80 @@ namespace sdnKDCamera
 
         //[DllImport("uniplay.dll",CallingConvention=CallingConvention.Cdecl)]
         //public static extern bool PLAYKD_InputVideoData(int nPort,)
+
+        #endregion
+
+        #region mediaportmgr.dll 函数封装
+
+        /// <summary>
+        /// 初始化 mediaportmgr.dll
+        /// </summary>
+        /// <returns></returns>
+        [DllImport("mediaportmgr.dll", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int PMGR_InitPortMgr();
+        /// <summary>
+        /// 释放 mediaportmgr.dll
+        /// </summary>
+        /// <returns></returns>
+        [DllImport("mediaportmgr.dll", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int PMGR_UnInitPortMgr();
+        /// <summary>
+        /// 得到 localIP
+        /// </summary>
+        /// <returns></returns>
+        [DllImport("mediaportmgr.dll", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int PMGR_GetLocalIp(ref uint dwLocalIp, uint dwRemoteIp, uint wRemotePort);
+        /// <summary>
+        /// 得到媒体播放端口
+        /// </summary>
+        /// <param name="wVideoPort"></param>
+        /// <param name="wAudioPort"></param>
+        /// <param name="videoChan"></param>
+        /// <param name="dwStartPort"></param>
+        /// <returns></returns>
+        [DllImport("mediaportmgr.dll", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int PMGR_GetMediaPort(ref uint wVideoPort, ref uint wAudioPort, char videoChan, uint dwStartPort);
+
+        #endregion
+
+        #region mediarevsdk.dll 函数封装
+        /// <summary>
+        /// 初始化 mediarevsdk.dll
+        /// </summary>
+        /// <param name="wTelnetPort"></param>
+        /// <param name="bOpenTelnet"></param>
+        /// <returns></returns>
+        [DllImport("mediarevsdk.dll", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int MEDIA_Init(uint wTelnetPort, int bOpenTelnet);
+        /// <summary>
+        /// 释放 mediarevsdk.dll
+        /// </summary>
+        /// <returns></returns>
+        [DllImport("mediarevsdk.dll", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int MEDIA_Release();
+        /// <summary>
+        /// 是否初始化dll
+        /// </summary>
+        /// <returns></returns>
+        [DllImport("mediarevsdk.dll", CallingConvention = CallingConvention.Cdecl)]
+        public static extern bool MEDIA_IsInit();
+        /// <summary>
+        /// 得到 mediaId
+        /// </summary>
+        /// <param name="pdwMediaId"></param>
+        /// <returns></returns>
+        [DllImport("mediarevsdk.dll", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int MEDIA_GetMediaId(ref long pdwMediaId);
+        /// <summary>
+        /// 设置rtsp参数
+        /// </summary>
+        /// <param name="dwMediaId"></param>
+        /// <param name="dwPuIp"></param>
+        /// <param name="dwLocalIp"></param>
+        /// <param name="tRtspSwitchParam"></param>
+        /// <returns></returns>
+        [DllImport("mediarevsdk.dll", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int MEDIA_SetRtspSwitch(long dwMediaId, uint dwPuIp, uint dwLocalIp, tagRtspSwitchParam tRtspSwitchParam);
 
         #endregion
 
