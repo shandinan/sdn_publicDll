@@ -40,7 +40,10 @@ namespace winForm_test
                         | long.Parse(items[3]);
                 long lIp = System.Net.IPAddress.HostToNetworkOrder(dreamduip);
 
+                //创建句柄
                 IntPtr inHandle = IPCSdk.IPC_CreateHandle(lIp, iPort, strName, strPasswd);
+                //登录摄像头
+                bool bl_login = IPCSdk.IPC_Login(inHandle, strName, strPasswd, ref iErro);
 
                 //string strVersion="";
                 //   bl = IPCSdk.IPC_GetVersion(out strVersion, 1000, ref iErro);
