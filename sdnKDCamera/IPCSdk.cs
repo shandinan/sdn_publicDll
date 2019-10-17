@@ -259,7 +259,7 @@ namespace sdnKDCamera
           返 回 值: 成功返回IPC_ERR_SUCCESS, 失败返回错误码
           =================================================================*/
         [DllImport("ipcsdk.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern bool IPC_GetRtspUrl(ref long pHandle, emPlayVideoType eType, ref TRTSPPARAM pParam, int nParamLen, ref TRTSPINFO pInfoOut, int nLenInfo, ref long pErrorCode, int bNoStream);
+        public static extern bool IPC_GetRtspUrl(ref long pHandle, emPlayVideoType eType, IntPtr pParam, int nParamLen, IntPtr pInfoOut, int nLenInfo, ref long pErrorCode, int bNoStream);
 
         #endregion
 
