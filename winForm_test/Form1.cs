@@ -9,6 +9,7 @@ using System.Windows.Forms;
 using sdnKDCamera;
 using System.Net;
 using static sdnKDCamera.IPCSdk;
+using System.Runtime.InteropServices;
 
 namespace winForm_test
 {
@@ -17,7 +18,7 @@ namespace winForm_test
 
         int iPort_play = 0; //播放句柄
         long pdwMediaId = 0;//MediaId
-        private IPCSdk ipcsdk = null;//IPCSdk
+       // private IPCSdk ipcsdk = null;//IPCSdk
         public Form1()
         {
             InitializeComponent();
@@ -78,9 +79,46 @@ namespace winForm_test
                int i=  IPCSdk.PMGR_GetLocalIp(ref dwLocalIp, lIp, 80);
                int ii= IPCSdk.PMGR_GetMediaPort(ref wVideoPort, ref wAudioPort, '0', 60000);
 
-                TRTSPPARAM tRtspParam = new TRTSPPARAM();
+                tagPlayVideoInfo tPlayVideoInfo = new tagPlayVideoInfo();
 
-               // TRTSPPARAM tRtspParam;
+                TRTSPPARAM tRtspParam = new TRTSPPARAM();
+                tRtspParam.byVideoSource = '1';
+                tRtspParam.wVideoChanID = 1;
+
+                TRTSPINFO tRtspInfo = new TRTSPINFO();
+                int nLen = 0;
+                int bNoStream = 0;
+                bool bRet = IPCSdk.IPC_GetRtspUrl(ref inHandle, emPlayVideoType.type_tcp, ref tRtspParam, Marshal.SizeOf(typeof(TRTSPPARAM)), ref tRtspInfo, nLen, ref iErro, bNoStream);
+
+                tagRtspSwitchParam tRtspSwitch = new tagRtspSwitchParam();
+
+                tRtspSwitch.tSwitchParam.tPlayPortInfo.tPlayVideoPort.wRtpPort = wVideoPort;
+                tRtspSwitch.tSwitchParam.tPlayPortInfo.tPlayVideoPort.wRtcpPort = wVideoPort + 1;
+                tRtspSwitch.tSwitchParam.tPlayPortInfo.tPlayVideoPort.wRtcpBackPort = tPlayVideoInfo.wRtcpVideoPort;
+                tRtspSwitch.tSwitchParam.tPlayPortInfo.tPlayAudioPort.wRtpPort = wAudioPort;
+                tRtspSwitch.tSwitchParam.tPlayPortInfo.tPlayAudioPort.wRtcpPort = wAudioPort + 1;
+                tRtspSwitch.tSwitchParam.tPlayPortInfo.tPlayAudioPort.wRtcpBackPort = tPlayVideoInfo.wRtcpAudioPort;
+
+                tRtspSwitch.tSwitchParam.tRemotePortInfo.wRemoteVideoPort = 59000;
+                tRtspSwitch.tSwitchParam.tRemotePortInfo.wRemoteAudioPort = 59002;
+
+                //strcpy(tRtspSwitch.szAdmin, m_sUser);
+                //strcpy(tRtspSwitch.szPassword, m_sPass);
+                //strcpy(tRtspSwitch.szMediaURL, tRtspInfo.szurl);
+
+                tRtspSwitch.szAdmin = Encoding.Default.GetBytes(strName);
+                tRtspSwitch.szPassword = Encoding.Default.GetBytes(strPasswd);
+                tRtspSwitch.szMediaURL =tRtspInfo.szurl;
+
+                // 按需
+                tRtspSwitch.tSwitchParam.tEncNameAndPayload.eEncName = tagEncName.E_ENCNAME_H264;
+                tRtspSwitch.tSwitchParam.tEncNameAndPayload.byPayload = 'j';
+                tRtspSwitch.bAlarm = true;      // 是否开启接收前端智能告警回调
+                tRtspSwitch.bNoStream = false;//FALSE申请rtsp码流， TRUE不申请rtsp码流，只申请rtsp告警链路
+
+                int nMediaRet = MEDIA_SetRtspSwitch(pdwMediaId, lIp, dwLocalIp, tRtspSwitch);
+
+                // TRTSPPARAM tRtspParam;
 
                 //string strVersion="";
                 //   bl = IPCSdk.IPC_GetVersion(out strVersion, 1000, ref iErro);
@@ -129,7 +167,7 @@ namespace winForm_test
         /// <param name="e"></param>
         private void Form1_Load(object sender, EventArgs e)
         {
-            ipcsdk = new IPCSdk();
+           // ipcsdk = new IPCSdk();
         }
     }
 }

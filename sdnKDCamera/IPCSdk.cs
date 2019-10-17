@@ -42,6 +42,8 @@ namespace sdnKDCamera
             E_ENCNAME_NULL,
         }
 
+   
+
         #endregion
 
         #region 结构体
@@ -62,8 +64,8 @@ namespace sdnKDCamera
         {
             [MarshalAsAttribute(UnmanagedType.ByValArray, SizeConst = 260, ArraySubType = UnmanagedType.I1)]
             public byte[] szurl;
-            int wRtspPort;
-            bool bDoubleAudio; // 是否支持双音频
+            public int wRtspPort;
+            public bool bDoubleAudio; // 是否支持双音频
         }
         /// <summary>
         /// 本地端口
@@ -71,24 +73,24 @@ namespace sdnKDCamera
         [StructLayoutAttribute(LayoutKind.Sequential)]
         public struct tagLocalNetParam
         {
-            uint wRtpPort;
-            uint wRtcpPort;
-            uint wRtcpBackPort;
+            public uint wRtpPort;
+            public uint wRtcpPort;
+            public uint wRtcpBackPort;
         }
 
         [StructLayoutAttribute(LayoutKind.Sequential)]
         public struct tagPlayPortInfo
         {
-            tagLocalNetParam tPlayVideoPort;
-            tagLocalNetParam tPlayAudioPort;
-            tagLocalNetParam tPlayAudioPort2;
-            tagLocalNetParam tPlayAlarmPort;
+            public tagLocalNetParam tPlayVideoPort;
+            public tagLocalNetParam tPlayAudioPort;
+            public tagLocalNetParam tPlayAudioPort2;
+            public tagLocalNetParam tPlayAlarmPort;
         }
         [StructLayoutAttribute(LayoutKind.Sequential)]
         public struct tagEncNameAndPayload
         {
-            tagEncName eEncName;          // 码流编码类型
-            char byPayload;				// payload
+            public tagEncName eEncName;          // 码流编码类型
+            public Char byPayload;				// payload
         }
         /// <summary>
         /// 远端端口
@@ -96,10 +98,10 @@ namespace sdnKDCamera
         [StructLayoutAttribute(LayoutKind.Sequential)]
         public struct tagRemotePortInfo
         {
-            uint wRemoteVideoPort;
-            uint wRemoteAudioPort;
-            uint wRemoteAudioPort2;
-            uint wRemoteAlarmPort;
+            public uint wRemoteVideoPort;
+            public uint wRemoteAudioPort;
+            public uint wRemoteAudioPort2;
+            public uint wRemoteAlarmPort;
         }
 
         /// <summary>
@@ -108,9 +110,9 @@ namespace sdnKDCamera
         [StructLayoutAttribute(LayoutKind.Sequential)]
         public struct tagSwitchParam
         {
-            tagPlayPortInfo tPlayPortInfo;            // 本地的端口(必要) 
-            tagRemotePortInfo tRemotePortInfo;        // 远端发送端口（必要）
-            tagLocalNetParam tEncNameAndPayload;	// 按需
+            public tagPlayPortInfo tPlayPortInfo;            // 本地的端口(必要) 
+            public tagRemotePortInfo tRemotePortInfo;        // 远端发送端口（必要）
+            public tagEncNameAndPayload tEncNameAndPayload;	// 按需
         }
 
         /// <summary>
@@ -125,9 +127,18 @@ namespace sdnKDCamera
             public byte[] szPassword;// 前端的密码
             [MarshalAsAttribute(UnmanagedType.ByValArray, SizeConst = 260, ArraySubType = UnmanagedType.I1)]
             public byte[] szMediaURL;// url
-            bool bAlarm;             // 是否开启告警
-            bool bNoStream;          // FALSE申请rtsp码流， TRUE不申请rtsp码流，只申请rtsp告警链路
-            tagSwitchParam tSwitchParam;
+            public bool bAlarm;             // 是否开启告警
+            public bool bNoStream;          // FALSE申请rtsp码流， TRUE不申请rtsp码流，只申请rtsp告警链路
+            public tagSwitchParam tSwitchParam;
+        }
+        /// <summary>
+        /// 浏览返回结构体参数(UDP)
+        /// </summary>
+        [StructLayoutAttribute(LayoutKind.Sequential)]
+        public struct tagPlayVideoInfo
+        {
+            public uint wRtcpVideoPort;      // 返回的视频rtcp端口(穿net使用)
+            public uint wRtcpAudioPort;	     // 返回的音频rtcp端口(穿net使用) 
         }
 
         #endregion
