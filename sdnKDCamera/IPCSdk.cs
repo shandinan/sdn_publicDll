@@ -29,7 +29,7 @@ namespace sdnKDCamera
         public enum emPlayVideoType
         {
             type_udp = 0,     // udp
-            type_tcp,          // tcp
+            type_tcp =1,          // tcp
             type_unknow,
         }
 
@@ -50,20 +50,23 @@ namespace sdnKDCamera
         /// <summary>
         /// RTSP浏览信息
         /// </summary>
-        [StructLayoutAttribute(LayoutKind.Sequential)]
+        [StructLayoutAttribute(LayoutKind.Sequential,CharSet=CharSet.Ansi)]
         public struct TRTSPPARAM
         {
-            public uint byVideoSource;//视频源ID
-            public int wVideoChanID;//码流通道
+          //  [MarshalAsAttribute(UnmanagedType.)]
+            public byte byVideoSource;//视频源ID
+            public ushort wVideoChanID;//码流通道
         }
         /// <summary>
         /// RTSP浏览返回信息
         /// </summary>
-        [StructLayoutAttribute(LayoutKind.Sequential)]
+        [StructLayoutAttribute(LayoutKind.Sequential,CharSet=CharSet.Ansi)]
         public struct TRTSPINFO
         {
             [MarshalAsAttribute(UnmanagedType.ByValArray, SizeConst = 260, ArraySubType = UnmanagedType.I1)]
             public byte[] szurl;
+            //[MarshalAsAttribute(UnmanagedType.BStr, SizeConst = 260)]
+            //public string szurl;
             public int wRtspPort;
             public bool bDoubleAudio; // 是否支持双音频
         }
@@ -90,7 +93,7 @@ namespace sdnKDCamera
         public struct tagEncNameAndPayload
         {
             public tagEncName eEncName;          // 码流编码类型
-            public int byPayload;				// payload
+            public Byte byPayload;				// payload
         }
         /// <summary>
         /// 远端端口
@@ -118,15 +121,21 @@ namespace sdnKDCamera
         /// <summary>
         /// 设置rtsp 参数
         /// </summary>
-        [StructLayoutAttribute(LayoutKind.Sequential)]
+        [StructLayoutAttribute(LayoutKind.Sequential,CharSet=CharSet.Ansi)]
         public struct tagRtspSwitchParam
         {
-            [MarshalAsAttribute(UnmanagedType.ByValArray, SizeConst = 32, ArraySubType = UnmanagedType.I1)]
-            public byte[] szAdmin; // 前端的账号
-            [MarshalAsAttribute(UnmanagedType.ByValArray, SizeConst = 32, ArraySubType = UnmanagedType.I1)]
-            public byte[] szPassword;// 前端的密码
-            [MarshalAsAttribute(UnmanagedType.ByValArray, SizeConst = 260, ArraySubType = UnmanagedType.I1)]
-            public byte[] szMediaURL;// url
+            //[MarshalAsAttribute(UnmanagedType.ByValArray, SizeConst = 32, ArraySubType = UnmanagedType.I1)]
+            //public byte[] szAdmin; // 前端的账号
+            //[MarshalAsAttribute(UnmanagedType.ByValArray, SizeConst = 32, ArraySubType = UnmanagedType.I1)]
+            //public byte[] szPassword;// 前端的密码
+            //[MarshalAsAttribute(UnmanagedType.ByValArray, SizeConst = 260, ArraySubType = UnmanagedType.I1)]
+            //public byte[] szMediaURL;// url
+            [MarshalAsAttribute(UnmanagedType.BStr, SizeConst = 32)]
+            public string szAdmin; // 前端的账号
+            [MarshalAsAttribute(UnmanagedType.BStr, SizeConst = 32)]
+            public string szPassword;// 前端的密码
+            [MarshalAsAttribute(UnmanagedType.BStr, SizeConst = 260)]
+            public string szMediaURL;// url
             public bool bAlarm;             // 是否开启告警
             public bool bNoStream;          // FALSE申请rtsp码流， TRUE不申请rtsp码流，只申请rtsp告警链路
             public tagSwitchParam tSwitchParam;
@@ -143,8 +152,8 @@ namespace sdnKDCamera
         [StructLayoutAttribute(LayoutKind.Sequential)]
         public struct tVideoParam
         { //下面一个属性跟之前的版本结构体（tagFrameHdr）尤其是网络组件提供的结构体有区别，大家要注意了
-            public char byKeyFrame;    //频帧类型（I or P）	KD_DATA_TYPE 
-            public char byFrameRate; //发送帧率,用于接收端
+            public byte byKeyFrame;    //频帧类型（I or P）	KD_DATA_TYPE 
+            public byte byFrameRate; //发送帧率,用于接收端
             public int wVideoWidth;  //视频帧宽
             public int wVideoHeight; //视频帧宽
         }
@@ -161,6 +170,20 @@ namespace sdnKDCamera
         {
             [FieldOffset(0)]
             public tVideoParam tVideoParam;
+            [FieldOffset(0)]
+            public tAudioParam tAudioParam;
+        }
+
+        [StructLayoutAttribute(LayoutKind.Explicit)]
+        public struct union1_1
+        {
+            [FieldOffset(0)]
+            public tVideoParam tVideoParam;
+        }
+
+        [StructLayoutAttribute(LayoutKind.Explicit)]
+        public struct union1_2
+        {
             [FieldOffset(0)]
             public tAudioParam tAudioParam;
         }
@@ -194,9 +217,10 @@ namespace sdnKDCamera
         //    [MarshalAsAttribute(UnmanagedType.ByValArray, SizeConst = 4, ArraySubType = UnmanagedType.I1)]
         //    public  short[] wReverse;
         //}
-        [StructLayoutAttribute(LayoutKind.Sequential)]
+        [StructLayoutAttribute(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
         public struct TMediaRawData
         {
+           // [MarshalAsAttribute(UnmanagedType.ByValTStr, SizeConst = 4)]
             public string pData;       //数据缓冲
             public int dwPreBufSize;//pData缓冲前预留了多少空间，用于加
             public int byMediaEncode; //在kdvdef.h 内部定义
@@ -205,10 +229,14 @@ namespace sdnKDCamera
             public int dwTimeStamp; //时间戳, 用于接收端
             public int dwSSRC;      //同步源, 用于接收端
             public long dwRawTimeStamp;       //绝对时间戳（视频上面时间）
-            public union union;
-            //public tAudioParam tAudioParam;
+             // public union union;
+            public tVideoParam tVideoParam;
+            public tAudioParam tAudioParam;
+            //  public IntPtr iunion;
+          //  public union1_1 union1;
+         //   public union1_2 union2;
 
-            [MarshalAsAttribute(UnmanagedType.SysInt, SizeConst = 4, ArraySubType = UnmanagedType.I1)]
+            [MarshalAsAttribute(UnmanagedType.ByValArray, SizeConst = 4, ArraySubType = UnmanagedType.I1)]
             public int[] wReverse;
         }
 
@@ -229,6 +257,17 @@ namespace sdnKDCamera
         /// <returns>成功返回true, 失败返回false，原因解析pErrorCode</returns>
         [DllImport("ipcsdk.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern bool IPC_InitDll(string pzDLLName, int wTelnetPort, int bOpenTelnet, ref long pErrorCode);
+        /*=================================================================
+         函数名称: IPC_GetCompileTime
+         功    能: 获取ipcsdk库编译时间
+          
+         参数说明:
+		  szCompileTime sdk库编译时间
+		  pErrorCode   	错误码
+         返回值: 成功返回true, 失败返回false，原因解析pErrorCode
+         =================================================================*/
+        [DllImport("ipcsdk.dll", CallingConvention = CallingConvention.Cdecl)]
+        public static extern bool IPC_GetCompileTime(byte[] szCompileTime, ref long pErrorCode);
         /// <summary>
         /// 得到系统版本号 【不可用】
         /// </summary>
@@ -329,11 +368,22 @@ namespace sdnKDCamera
           参数说明: pParam [in]       输入结构体参数
 		  nLen [in]		    输入结构体长度
 		  pInfoOut [out]	输出结构体参数
-		  nLenInfo [out]	输出结构体长度
+		  nLenInfo [out]	输出结构体长度 
           返 回 值: 成功返回IPC_ERR_SUCCESS, 失败返回错误码
           =================================================================*/
         [DllImport("ipcsdk.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern bool IPC_GetRtspUrl(ref uint pHandle, emPlayVideoType eType, ref TRTSPPARAM pParam, int nParamLen, ref TRTSPINFO pInfoOut, ref int nLenInfo, ref long pErrorCode, int bNoStream);
+        public static extern bool IPC_GetRtspUrl(ref uint pHandle, emPlayVideoType eType,ref TRTSPPARAM pParam, int nParamLen,ref TRTSPINFO pInfoOut, ref int nLenInfo, ref long pErrorCode, int bNoStream);
+        /*=================================================================
+          函数名称: IPC_GetVideoInfo
+          功    能: 获取rtp码流
+          参数说明: pParam [in]       输入结构体参数
+		  nLen [in]		    输入结构体长度
+		  pInfoOut [out]	输出结构体参数
+		  nLenInfo [out]	输出结构体长度
+          返 回 值: 成功返回IPC_ERR_SUCCESS, 失败返回错误码
+         =================================================================*/
+        [DllImport("ipcsdk.dll", CallingConvention = CallingConvention.Cdecl)]
+        public static extern bool IPC_GetVideoInfo(ref uint pHandle, emPlayVideoType eType, IntPtr pParam, int nParamLen, ref TRTSPINFO pInfoOut, ref int nLenInfo, ref long pErrorCode, int bNoStream);
 
         #endregion
 
@@ -472,7 +522,7 @@ namespace sdnKDCamera
         /// <param name="dwStartPort"></param>
         /// <returns></returns>
         [DllImport("mediaportmgr.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern int PMGR_GetMediaPort(ref uint wVideoPort, ref uint wAudioPort, char videoChan, uint dwStartPort);
+        public static extern int PMGR_GetMediaPort(ref uint wVideoPort, ref uint wAudioPort, Byte videoChan, uint dwStartPort);
 
         #endregion
 
@@ -516,7 +566,7 @@ namespace sdnKDCamera
         public static extern int MEDIA_SetRtspSwitch(long dwMediaId, uint dwPuIp, uint dwLocalIp, tagRtspSwitchParam tRtspSwitchParam);
 
         //  public delegate void MEDIA_FRAMECBFUN(int nPort, tagMediaRawData pFrame, IntPtr pUserData); //TMediaRawData
-        public delegate void MEDIA_FRAMECBFUN(int nPort, TMediaRawData pFrame, object pUserData);
+        public delegate void MEDIA_FRAMECBFUN(int nPort, TMediaRawData pFrame, IntPtr pUserData);
         /// <summary>
         /// 申请码流的情况下才需要回调帧数据过来解码，如果只是rtsp链路接收告警，就不需要
         /// </summary>
@@ -525,7 +575,7 @@ namespace sdnKDCamera
         /// <param name="pParam"></param>
         /// <returns></returns>
         [DllImport("mediarevsdk.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern int MEDIA_SetFrameCallBack(long dwMediaId, MEDIA_FRAMECBFUN pFun, object pParam);
+        public static extern int MEDIA_SetFrameCallBack(long dwMediaId, MEDIA_FRAMECBFUN pFun, IntPtr pParam);
 
         #endregion
 

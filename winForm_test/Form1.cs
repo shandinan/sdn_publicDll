@@ -31,7 +31,7 @@ namespace winForm_test
         /// <param name="dwMediaID"></param>
         /// <param name="pFrame"></param>
         /// <param name="pUserData"></param>
-        public void FrameCb(int dwMediaID, TMediaRawData pFrame,  object pUserData)
+        public void FrameCb(int dwMediaID, TMediaRawData pFrame, IntPtr pUserData)
         {
             try
             {
@@ -56,6 +56,10 @@ namespace winForm_test
                 bool bl = IPCSdk.IPC_InitDll("ipcsdk.dll", 3300, 0, ref iErro);
                 bool bl2 = IPCSdk.IPC_InitDll("mediarevsdk.dll", 3500, 0, ref iErro);
                 bool bl3 = IPCSdk.IPC_InitDll("ipcrpctrl.dll", 3500, 0, ref iErro);
+                string strTime="";
+                byte[] bytime = new byte[64];
+                IPCSdk.IPC_GetCompileTime(bytime, ref iErro);
+                strTime = Encoding.ASCII.GetString(bytime);
                 string strIp = "192.168.50.20";
                 uint iPort = 80;
                 string strName = "admin";
@@ -75,14 +79,16 @@ namespace winForm_test
                 //创建句柄
                 uint inHandle = IPCSdk.IPC_CreateHandle(lIp, iPort, strName, strPasswd);
                 //登录摄像头
+             //   IntPtr ipHandle = new IntPtr(inHandle);
                 bool bl_login = IPCSdk.IPC_Login(ref inHandle, strName, strPasswd, ref iErro);
-
+                
                 int iGetMediaId = IPCSdk.MEDIA_GetMediaId(ref pdwMediaId);
 
+                IPCSdk.PLAYKD_SetLogConfig(8 | 16, 1 | 2 | 4 | 8, "D:\\", 0, 0);
                 //初始化 uniplay.dll 
                 bool lb_init_uniplay = IPCSdk.PLAYKD_Startup();
 
-                IPCSdk.PLAYKD_SetLogConfig(8 | 16, 1 | 2 | 4 | 8, "D:\\", 0, 0);
+
 
                 //获取播放端口
                 bool bl_getPort = IPCSdk.PLAYKD_GetPort(null, false, ref iPort_play);
@@ -101,22 +107,29 @@ namespace winForm_test
                 bool bDoubleAudio = false;
 
                 int i = IPCSdk.PMGR_GetLocalIp(ref dwLocalIp, lIp, 80);
-                int ii = IPCSdk.PMGR_GetMediaPort(ref wVideoPort, ref wAudioPort, '0', MEDIA_RTP_LOCAL_PORT);
+                int ii = IPCSdk.PMGR_GetMediaPort(ref wVideoPort, ref wAudioPort, 0, MEDIA_RTP_LOCAL_PORT);
 
                 tagPlayVideoInfo tPlayVideoInfo = new tagPlayVideoInfo();
 
                 TRTSPPARAM tRtspParam = new TRTSPPARAM();
+                //char cd = new char();
+                //cd = (char)1;
+
                 tRtspParam.byVideoSource = 1;
-                tRtspParam.wVideoChanID = 1;
+                tRtspParam.wVideoChanID = 0;
 
                 TRTSPINFO tRtspInfo = new TRTSPINFO();
                 int nLen = 0;
                 int bNoStream = 0;
-                // IntPtr ipRtspParam = Marshal.AllocCoTaskMem(Marshal.SizeOf(typeof(TRTSPPARAM)));
-                // Marshal.StructureToPtr(tRtspParam, ipRtspParam, true);//false容易造成内存泄漏
-                IntPtr ipRtspParam = IntPtr.Zero;
-                IntPtr iptRtspInfo = IntPtr.Zero;
-                bool bRet = IPCSdk.IPC_GetRtspUrl(ref inHandle, emPlayVideoType.type_tcp, ref tRtspParam, Marshal.SizeOf(typeof(TRTSPPARAM)), ref tRtspInfo, ref nLen, ref iErro, bNoStream);
+                IntPtr ipRtspParam = Marshal.AllocCoTaskMem(Marshal.SizeOf(typeof(TRTSPPARAM)));
+                Marshal.StructureToPtr(tRtspParam, ipRtspParam, true);//false容易造成内存泄漏
+                //IntPtr ipRtspParam = IntPtr.Zero;
+                IntPtr iptRtspInfo = Marshal.AllocCoTaskMem(Marshal.SizeOf(typeof(TRTSPINFO))); ;
+
+                bool bRet = IPCSdk.IPC_GetRtspUrl(ref inHandle, emPlayVideoType.type_tcp, ref tRtspParam, Marshal.SizeOf(typeof(TRTSPPARAM)), ref tRtspInfo, ref nLen, ref iErro, bNoStream);  //IPC_GetVideoInfo
+                                                                                                                                                                                            //bool bRet = IPCSdk.IPC_GetVideoInfo(ref inHandle, emPlayVideoType.type_tcp, ipRtspParam, Marshal.SizeOf(typeof(TRTSPPARAM)), ref tRtspInfo, ref nLen, ref iErro, bNoStream);
+
+                //tRtspInfo = (TRTSPINFO)Marshal.PtrToStructure(iptRtspInfo, typeof(TRTSPINFO));
 
                 tagRtspSwitchParam tRtspSwitch = new tagRtspSwitchParam();
 
@@ -134,23 +147,32 @@ namespace winForm_test
                 //strcpy(tRtspSwitch.szPassword, m_sPass);
                 //strcpy(tRtspSwitch.szMediaURL, tRtspInfo.szurl);
 
-                tRtspSwitch.szAdmin = Encoding.Default.GetBytes(strName.PadRight(50, '\0'));
-                tRtspSwitch.szPassword = Encoding.Default.GetBytes(strPasswd.PadRight(50, '\0'));
-                tRtspSwitch.szMediaURL = tRtspInfo.szurl;
+                //tRtspSwitch.szAdmin = Encoding.Default.GetBytes(strName.PadRight(32, '\0'));
+                //tRtspSwitch.szPassword = Encoding.Default.GetBytes(strPasswd.PadRight(32, '\0'));
+                //tRtspSwitch.szMediaURL = tRtspInfo.szurl;
+                tRtspSwitch.szAdmin = strName;//.PadRight(32, ' ');
+                tRtspSwitch.szPassword = strPasswd;//.PadRight(32, ' ');
+                                                   //tRtspSwitch.szMediaURL = tRtspInfo.szurl;
                 string strUrl = Encoding.Default.GetString(tRtspInfo.szurl);
+                MessageBox.Show(strUrl);
+                // string strUrl = tRtspInfo.szurl;
+              //   tRtspSwitch.szMediaURL = "rtsp://192.168.50.20:554/realtime?id=0;aid=0;metadata=vnd.cgi.metadata;agent=cgi";//.PadRight(260,' ');
+                tRtspSwitch.szMediaURL = strUrl;
 
                 // 按需
                 tRtspSwitch.tSwitchParam.tEncNameAndPayload.eEncName = tagEncName.E_ENCNAME_H264;
                 tRtspSwitch.tSwitchParam.tEncNameAndPayload.byPayload = 106;//j
-                tRtspSwitch.bAlarm = true;      // 是否开启接收前端智能告警回调
+                tRtspSwitch.bAlarm = false;      // 是否开启接收前端智能告警回调
                 tRtspSwitch.bNoStream = false;//FALSE申请rtsp码流， TRUE不申请rtsp码流，只申请rtsp告警链路
 
                 int nMediaRet = IPCSdk.MEDIA_SetRtspSwitch(pdwMediaId, lIp, dwLocalIp, tRtspSwitch);
 
-              frameCb = new MEDIA_FRAMECBFUN(FrameCb);
+                frameCb = new MEDIA_FRAMECBFUN(FrameCb);
                 long test = 0;
-
-                nMediaRet = IPCSdk.MEDIA_SetFrameCallBack(pdwMediaId, frameCb, this);
+                Form1 form = new Form1();
+                GCHandle gcHandle = GCHandle.Alloc(form);
+                IntPtr ipForm = GCHandle.ToIntPtr(gcHandle);
+                nMediaRet = IPCSdk.MEDIA_SetFrameCallBack(pdwMediaId, frameCb, ipForm);
 
                 // TRTSPPARAM tRtspParam;
 
@@ -163,7 +185,7 @@ namespace winForm_test
                 throw ex;
             }
         }
-      
+
 
         /// <summary>
         /// 开始录像
