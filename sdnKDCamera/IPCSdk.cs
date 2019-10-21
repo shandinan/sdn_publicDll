@@ -566,6 +566,8 @@ namespace sdnKDCamera
         public static extern int MEDIA_SetRtspSwitch(long dwMediaId, uint dwPuIp, uint dwLocalIp, tagRtspSwitchParam tRtspSwitchParam);
 
         //  public delegate void MEDIA_FRAMECBFUN(int nPort, tagMediaRawData pFrame, IntPtr pUserData); //TMediaRawData
+
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         public delegate void MEDIA_FRAMECBFUN(int nPort, TMediaRawData pFrame, IntPtr pUserData);
         /// <summary>
         /// 申请码流的情况下才需要回调帧数据过来解码，如果只是rtsp链路接收告警，就不需要
